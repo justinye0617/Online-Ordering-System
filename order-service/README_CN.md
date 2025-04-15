@@ -16,8 +16,6 @@
     - [2. 支付订单](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#2-支付订单)
     - [3. 查询订单详情](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#3-查询订单详情)
 - [数据库结构](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#数据库结构)
-- [后续扩展](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#后续扩展)
-- [许可证](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#许可证)
 
 ------
 

@@ -7,20 +7,26 @@ This repository contains the **Shopping Cart Service**, a Spring Boot microservi
 ## Table of Contents
 
 - [Key Features](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#key-features)
+
 - [Architecture Overview](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#architecture-overview)
+
 - [Technology Stack](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#technology-stack)
+
 - [Getting Started](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#getting-started)
     - [Prerequisites](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#prerequisites)
     - [Configuration](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#configuration)
     - [Build & Run](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#build--run)
+    
 - [API Endpoints](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#api-endpoints)
     - [Add Item to Cart](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#add-item-to-cart)
     - [Remove Item from Cart](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#remove-item-from-cart)
     - [View Cart](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#view-cart)
+    
 - [Database Schema](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#database-schema)
+
 - [Example Usage](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#example-usage)
-- [Further Enhancements](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#further-enhancements)
-- [License](https://chatgpt.com/c/67fb65e9-f02c-8000-b9c2-1d5e30af60e2#license)
+
+    
 
 ------
 
@@ -236,15 +242,6 @@ The Shopping Cart Service automatically creates or updates the schema (tables) b
     ```
 
 You can also use [Postman](https://www.postman.com/) or any other REST client to test these endpoints with the same URLs.
-
-------
-
-## Further Enhancements
-
-- **Message Queues & Event-Driven**: Integrate RabbitMQ or Kafka to notify other services (e.g., inventory or analytics) whenever a cart is updated.
-- **Caching**: Use Redis or another caching system to reduce database load and improve performance for read-heavy scenarios.
-- **Authentication & Security**: Introduce JWT or OAuth2 for securing cart actions so only the owner can manipulate or view a given cart.
-- **Docker & CI/CD**: Containerize the service using Docker and automate deployments with CI/CD pipelines.
 
 ------
 
