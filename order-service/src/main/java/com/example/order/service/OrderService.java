@@ -2,6 +2,8 @@ package com.example.order.service;
 import com.example.order.model.Order;
 import com.example.order.model.OrderItem;
 import com.example.order.repository.OrderRepository;
+import com.example.order.client.CartClient;
+import com.example.order.dto.*;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private CartClient cartClient;
 
     @Transactional
     public Order createOrder(Long userId, List<OrderItem> orderItems) {
@@ -33,6 +38,32 @@ public class OrderService {
             return orderRepository.save(order);
         }
         return null;
+    }
+
+    @Transactional
+    public Order checkout(Long userId) {
+        CartDTO cart = cartClient.getCart(userId);
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw new IllegalStateException("购物车为空，无法结账");
+        }
+
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setStatus("CREATED");
+
+        for (CartItemDTO c : cart.getItems()) {
+            OrderItem item = new OrderItem();
+            item.setProductId(c.getProductId());
+            item.setQuantity(c.getQuantity());
+            item.setPrice(c.getPrice());
+            order.addItem(item);
+        }
+        Order savedOrder = orderRepository.save(order);
+
+        // 清空购物车
+        cartClient.clearCart(userId);
+
+        return savedOrder;
     }
 
     public Optional<Order> getOrder(Long orderId) {

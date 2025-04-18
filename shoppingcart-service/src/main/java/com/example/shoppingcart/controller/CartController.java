@@ -16,8 +16,9 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<Cart> addItem(@RequestParam Long userId,
                                         @RequestParam Long productId,
-                                        @RequestParam Integer quantity) {
-        Cart cart = cartService.addItemToCart(userId, productId, quantity);
+                                        @RequestParam Integer quantity,
+                                        @RequestParam Double price) {
+        Cart cart = cartService.addItemToCart(userId, productId, quantity, price);
         return ResponseEntity.ok(cart);
     }
 
@@ -38,5 +39,11 @@ public class CartController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(cart);
+    }
+
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clear(@RequestParam Long userId) {
+        cartService.clearCart(userId);
+        return ResponseEntity.ok().build();
     }
 }

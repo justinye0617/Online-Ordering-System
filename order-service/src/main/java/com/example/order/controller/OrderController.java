@@ -45,4 +45,10 @@ public class OrderController {
         Optional<Order> order = orderService.getOrder(orderId);
         return order.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<Order> checkout(@RequestParam Long userId) {
+        Order order = orderService.checkout(userId);
+        return ResponseEntity.ok(order);
+    }
 }

@@ -15,17 +15,18 @@ public class CartService {
     private CartRepository cartRepository;
 
     @Transactional
-    public Cart addItemToCart(Long userId, Long productId, Integer quantity) {
+    public Cart addItemToCart(Long userId, Long productId, Integer quantity, Double price) {
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart newCart = new Cart();
             newCart.setUserId(userId);
             return newCart;
         });
-
+        System.out.println(productId);
         boolean itemExists = false;
         for (CartItem item : cart.getItems()) {
             if (item.getProductId().equals(productId)) {
                 item.setQuantity(item.getQuantity() + quantity);
+                item.setPrice(price);
                 itemExists = true;
                 break;
             }
@@ -34,6 +35,7 @@ public class CartService {
             CartItem newItem = new CartItem();
             newItem.setProductId(productId);
             newItem.setQuantity(quantity);
+            newItem.setPrice(price);
             cart.addItem(newItem);
         }
         return cartRepository.save(cart);
@@ -49,6 +51,16 @@ public class CartService {
         }
         return null;
     }
+
+    @Transactional
+    public void clearCart(Long userId) {
+        cartRepository.findByUserId(userId)
+                .ifPresent(cart -> {
+                    cart.getItems().clear();
+                    cartRepository.save(cart);
+                });
+    }
+
 
     public Cart getCart(Long userId) {
         return cartRepository.findByUserId(userId).orElse(null);
