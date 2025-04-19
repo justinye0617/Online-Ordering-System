@@ -35,6 +35,7 @@ CREATE TABLE cart (
 | cart_id     | BIGINT UNSIGNED | NOT NULL, FK → cart(id) | Related cart ID |
 | product_id  | BIGINT UNSIGNED | NOT NULL                | Product ID      |
 | quantity    | INT UNSIGNED    | NOT NULL                | Quantity        |
+| price       | DOUBLE UNSIGNED | NOT NULL                | Product price   |
 
 ```sql
 CREATE TABLE cart_item (
@@ -42,6 +43,7 @@ CREATE TABLE cart_item (
   cart_id    BIGINT UNSIGNED NOT NULL,
   product_id BIGINT UNSIGNED NOT NULL,
   quantity   INT UNSIGNED NOT NULL,
+  price      DOUBLE UNSIGNED NOT NULL,
   CONSTRAINT fk_cartitem_cart
     FOREIGN KEY (cart_id) REFERENCES cart(id)
       ON DELETE CASCADE ON UPDATE CASCADE,
