@@ -132,14 +132,14 @@ POST /api/order/checkout?userId=1
 
 ## 🌐 Frontend Usage
 
-### 1. `customer.html`
+### 1. `order-service/src/main/resources/static/customer.html`
 
 - View menu
 - Add items to cart
 - View cart
 - Checkout and create order
 
-### 2. `vendor.html`
+### 2. `order-service/src/main/resources/static/vendor.html`
 
 - Add or remove menu items
 - Manage restaurant's offerings
