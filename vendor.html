@@ -1,3 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商家后台</title>
+</head>
+<body>
+<h1>菜单管理</h1>
+
+<h2>添加菜品</h2>
+<input type="text" id="name" placeholder="菜名"><br><br>
+<input type="number" id="price" placeholder="价格"><br><br>
+<input type="text" id="imageUrl" placeholder="图片 URL"><br><br>
+<button onclick="addItem()">添加菜品</button>
+
+<h2>当前菜单</h2>
+<div id="menu"></div>
+
 <script>
     const userId = 1; // 商家ID
     const host = "http://47.88.23.191";
@@ -23,18 +41,39 @@
     }
 
     async function loadMenu() {
-        const res = await fetch(`${host}:8089/api/menu/view?userId=${userId}`);
-        const data = await res.json();
         const menuEl = document.getElementById("menu");
-        menuEl.innerHTML = data.items.map(item => `
-        <div style="margin-bottom:10px;">
-          <img src="${item.imageUrl}" width="100"><br>
-          <strong>${item.name}</strong><br>
-          价格: ¥${item.price}<br>
-          <button onclick="removeItem(${item.id})">删除</button>
-        </div>
-      `).join("");
+        if (!menuEl) {
+            console.error("菜单容器未找到！");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${host}:8089/api/menu/view?userId=${userId}`);
+            const data = await res.json();
+
+            if (!data || !data.items || data.items.length === 0) {
+                menuEl.innerHTML = "<p>暂无菜品，请添加。</p>";
+                return;
+            }
+
+            menuEl.innerHTML = data.items.map(item => `
+                <div style="margin-bottom:10px;">
+                  <img src="${item.imageUrl}" width="100"><br>
+                  <strong>${item.name}</strong><br>
+                  价格: ¥${item.price}<br>
+                  <button onclick="removeItem(${item.id})">删除</button>
+                </div>
+            `).join("");
+        } catch (err) {
+            menuEl.innerHTML = `<p style="color:red;">加载菜单失败，请稍后重试。</p>`;
+            console.error("菜单加载失败:", err);
+        }
     }
 
-    loadMenu();
+    // 页面加载完自动执行
+    window.onload = () => {
+        loadMenu();
+    };
 </script>
+</body>
+</html>
