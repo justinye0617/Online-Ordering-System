@@ -52,6 +52,9 @@ public class MenuService {
     }
 
     public Menu getMenu(Long userId){
-        return menuRepository.findByUserId(userId).orElse(null);
+        Menu menu = menuRepository.findByUserId(userId).orElseGet(() -> {
+            Menu m = new Menu(); m.setUserId(userId); return m;
+        });
+        return menu;
     }
 }
