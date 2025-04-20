@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/cart")
 public class CartController {
 
@@ -16,11 +17,14 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<Cart> addItem(@RequestParam Long userId,
                                         @RequestParam Long productId,
+                                        @RequestParam String name,
+                                        @RequestParam String imageUrl,
                                         @RequestParam Integer quantity,
                                         @RequestParam Double price) {
-        Cart cart = cartService.addItemToCart(userId, productId, quantity, price);
+        Cart cart = cartService.addItemToCart(userId, productId, name, imageUrl, quantity, price);
         return ResponseEntity.ok(cart);
     }
+
 
     @DeleteMapping("/remove")
     public ResponseEntity<Cart> removeItem(@RequestParam Long userId,

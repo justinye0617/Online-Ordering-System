@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商家后台</title>
+</head>
+<body>
+<h1>菜单管理</h1>
+
+<h2>添加菜品</h2>
+<input type="text" id="name" placeholder="菜名"><br><br>
+<input type="number" id="price" placeholder="价格"><br><br>
+<input type="text" id="imageUrl" placeholder="图片 URL"><br><br>
+<button onclick="addItem()">添加菜品</button>
+
+<h2>当前菜单</h2>
+<div id="menu"></div>
+
+<script>
+    const userId = 1; // 商家ID
+
+    async function addItem() {
+        const name = document.getElementById("name").value;
+        const price = document.getElementById("price").value;
+        const imageUrl = document.getElementById("imageUrl").value;
+
+        await fetch(`http://localhost:8089/api/menu/add?userId=${userId}&name=${encodeURIComponent(name)}&price=${price}&imageUrl=${encodeURIComponent(imageUrl)}`, {
+            method: "POST"
+        });
+        alert("菜品添加成功！");
+        loadMenu();
+    }
+
+    async function removeItem(productId) {
+        await fetch(`http://localhost:8089/api/menu/remove?userId=${userId}&productId=${productId}`, {
+            method: "DELETE"
+        });
+        alert("菜品已删除！");
+        loadMenu();
+    }
+
+    async function loadMenu() {
+        const res = await fetch(`http://localhost:8089/api/menu/view?userId=${userId}`);
+        const data = await res.json();
+        const menuEl = document.getElementById("menu");
+        menuEl.innerHTML = data.items.map(item => `
+        <div style="margin-bottom:10px;">
+          <img src="${item.imageUrl}" width="100"><br>
+          <strong>${item.name}</strong><br>
+          价格: ¥${item.price}<br>
+          <button onclick="removeItem(${item.productId})">删除</button>
+        </div>
+      `).join("");
+    }
+
+    loadMenu();
+</script>
+</body>
+</html>

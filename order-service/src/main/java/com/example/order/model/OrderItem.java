@@ -10,6 +10,8 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long productId;
+    private String name;
+    private String imageUrl;
     private Integer quantity;
     private Double price;
     @ManyToOne(fetch = FetchType.LAZY)

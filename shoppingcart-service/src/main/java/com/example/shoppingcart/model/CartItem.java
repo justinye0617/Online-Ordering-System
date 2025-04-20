@@ -12,7 +12,9 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long productId;
+    private Long productId;  // 对应 MenuItem.id
+    private String name;     // 菜名
+    private String imageUrl; // 图片
     private Integer quantity;
     private Double price;
 
