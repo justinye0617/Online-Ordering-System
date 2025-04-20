@@ -17,7 +17,7 @@ public class MenuService {
     @Transactional
     public Menu addItemToMenu(Long userId, String name, Double price, String imageUrl) {
         Menu menu = menuRepository.findByUserId(userId).orElseGet(() -> {
-            Menu m = new Menu(); m.setUserId(userId); return m;
+            Menu m = new Menu(); m.setUserId(userId); return menuRepository.save(m);
         });
 
         boolean exists = false;
@@ -53,7 +53,7 @@ public class MenuService {
 
     public Menu getMenu(Long userId){
         Menu menu = menuRepository.findByUserId(userId).orElseGet(() -> {
-            Menu m = new Menu(); m.setUserId(userId); return m;
+            Menu m = new Menu(); m.setUserId(userId); return menuRepository.save(m);
         });
         return menu;
     }
