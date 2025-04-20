@@ -52,11 +52,13 @@ public class OrderService {
         order.setStatus("CREATED");
 
         for (CartItemDTO c : cart.getItems()) {
-            OrderItem item = new OrderItem();
-            item.setProductId(c.getProductId());
-            item.setQuantity(c.getQuantity());
-            item.setPrice(c.getPrice());
-            order.addItem(item);
+            OrderItem oi = new OrderItem();
+            oi.setProductId(c.getProductId());
+            oi.setName(c.getName());
+            oi.setImageUrl(c.getImageUrl());
+            oi.setQuantity(c.getQuantity());
+            oi.setPrice(c.getPrice());
+            order.addItem(oi);
         }
         Order savedOrder = orderRepository.save(order);
 

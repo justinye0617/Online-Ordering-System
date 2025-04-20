@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>客户点餐界面</title>
+    <title>点餐界面</title>
 </head>
 <body>
 <h1>欢迎点餐</h1>
@@ -13,27 +13,30 @@
 <h2>购物车</h2>
 <button onclick="viewCart()">查看购物车</button>
 <div id="cart"></div>
-
-<button onclick="checkout()">结账</button>
+<br>
+<button onclick="checkout()">立即结账</button>
 
 <script>
-    const userId = 1; // 模拟固定用户
+    const userId = 1001;     // 客户ID
+    const vendorId = 1;      // 商家ID（菜单归属）
 
     async function loadMenu() {
-        const res = await fetch("http://localhost:8089/api/menu/view?userId=" + userId);
+        const res = await fetch(`http://localhost:8089/api/menu/view?userId=${vendorId}`);
         const data = await res.json();
         const menuEl = document.getElementById("menu");
         menuEl.innerHTML = data.items.map(item => `
-        <p>
-          商品ID: ${item.productId}, 价格: ${item.price}
-          <button onclick="addToCart(${item.productId}, ${item.price})">加入购物车</button>
-        </p>
+        <div style="margin-bottom:10px;">
+          <img src="${item.imageUrl}" width="100"><br>
+          <strong>${item.name}</strong><br>
+          价格: ¥${item.price}<br>
+          <button onclick="addToCart(${item.id}, '${item.name}', '${item.imageUrl}', ${item.price})">加入购物车</button>
+        </div>
       `).join("");
     }
 
-    async function addToCart(productId, price) {
-        await fetch(`http://localhost:8081/api/cart/add?userId=${userId}&productId=${productId}&quantity=1&price=${price}`, {
-            method: 'POST'
+    async function addToCart(productId, name, imageUrl, price) {
+        await fetch(`http://localhost:8081/api/cart/add?userId=${userId}&productId=${productId}&name=${encodeURIComponent(name)}&imageUrl=${encodeURIComponent(imageUrl)}&quantity=1&price=${price}`, {
+            method: "POST"
         });
         alert("已加入购物车");
     }
@@ -41,9 +44,18 @@
     async function viewCart() {
         const res = await fetch(`http://localhost:8081/api/cart/view?userId=${userId}`);
         const data = await res.json();
-        document.getElementById("cart").innerHTML = data.items.map(i =>
-            `<p>商品 ${i.productId}, 数量: ${i.quantity}, 单价: ${i.price}</p>`
-        ).join("");
+        const cartEl = document.getElementById("cart");
+        if (!data.items || data.items.length === 0) {
+            cartEl.innerHTML = "<p>购物车为空</p>";
+            return;
+        }
+        cartEl.innerHTML = data.items.map(item => `
+        <div style="margin-bottom:10px;">
+          <img src="${item.imageUrl}" width="80"><br>
+          <strong>${item.name}</strong><br>
+          数量: ${item.quantity} × ¥${item.price}
+        </div>
+      `).join("");
     }
 
     async function checkout() {
@@ -51,8 +63,8 @@
             method: "POST"
         });
         const order = await res.json();
-        alert(`下单成功！订单号: ${order.id}`);
-        viewCart();
+        alert("订单创建成功！订单编号: " + order.id);
+        viewCart(); // 重新查看购物车（应已清空）
     }
 
     loadMenu();

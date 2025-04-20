@@ -15,11 +15,13 @@ public class MenuController {
 
     @PostMapping("/add")
     public ResponseEntity<Menu> addItem(@RequestParam Long userId,
-                                        @RequestParam Long productId,
-                                        @RequestParam Double price){
-        Menu menu = menuService.addItemToMenu(userId, productId, price);
+                                        @RequestParam String name,
+                                        @RequestParam Double price,
+                                        @RequestParam String imageUrl) {
+        Menu menu = menuService.addItemToMenu(userId, name, price, imageUrl);
         return ResponseEntity.ok(menu);
     }
+
 
     @DeleteMapping("/remove")
     public ResponseEntity<Menu> removeItem(@RequestParam Long userId,

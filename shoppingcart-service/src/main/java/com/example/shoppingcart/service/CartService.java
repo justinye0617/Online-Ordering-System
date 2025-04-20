@@ -15,31 +15,37 @@ public class CartService {
     private CartRepository cartRepository;
 
     @Transactional
-    public Cart addItemToCart(Long userId, Long productId, Integer quantity, Double price) {
+    public Cart addItemToCart(Long userId,
+                              Long productId,
+                              String name,
+                              String imageUrl,
+                              Integer quantity,
+                              Double price) {
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
-            Cart newCart = new Cart();
-            newCart.setUserId(userId);
-            return newCart;
+            Cart c = new Cart(); c.setUserId(userId); return c;
         });
-        System.out.println(productId);
-        boolean itemExists = false;
-        for (CartItem item : cart.getItems()) {
-            if (item.getProductId().equals(productId)) {
-                item.setQuantity(item.getQuantity() + quantity);
-                item.setPrice(price);
-                itemExists = true;
+
+        boolean found = false;
+        for (CartItem ci : cart.getItems()) {
+            if (ci.getProductId().equals(productId)) {
+                ci.setQuantity(ci.getQuantity() + quantity);
+                ci.setPrice(price);
+                found = true;
                 break;
             }
         }
-        if (!itemExists) {
-            CartItem newItem = new CartItem();
-            newItem.setProductId(productId);
-            newItem.setQuantity(quantity);
-            newItem.setPrice(price);
-            cart.addItem(newItem);
+        if (!found) {
+            CartItem ci = new CartItem();
+            ci.setProductId(productId);
+            ci.setName(name);
+            ci.setImageUrl(imageUrl);
+            ci.setQuantity(quantity);
+            ci.setPrice(price);
+            cart.addItem(ci);
         }
         return cartRepository.save(cart);
     }
+
 
     @Transactional
     public Cart removeItemFromCart(Long userId, Long productId) {
