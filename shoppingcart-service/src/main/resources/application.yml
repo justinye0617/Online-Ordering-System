@@ -10,4 +10,3 @@ spring:
         min-idle: 0
 server:
   port: 8081
-  address: 0.0.0.0
