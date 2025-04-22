@@ -1,79 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>商家后台</title>
+  <meta charset="UTF-8">
+  <title>商家后台</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 30px;
+      color: #333;
+    }
+
+    h1, h2 {
+      color: #2c3e50;
+    }
+
+    .form-section, .menu-section {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 300px;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .menu-item {
+      border: 1px solid #e1e4e8;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      background-color: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .menu-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+
+    .menu-info {
+      flex: 1;
+    }
+
+    .menu-info strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .menu-info .price {
+      color: #e67e22;
+      font-weight: bold;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+  </style>
 </head>
 <body>
-<h1>菜单管理</h1>
 
-<h2>添加菜品</h2>
-<input type="text" id="name" placeholder="菜名"><br><br>
-<input type="number" id="price" placeholder="价格"><br><br>
-<input type="text" id="imageUrl" placeholder="图片 URL"><br><br>
-<button onclick="addItem()">添加菜品</button>
+  <h1>商家后台管理</h1>
 
-<h2>当前菜单</h2>
-<div id="menu"></div>
+  <div class="form-section">
+    <h2>添加菜品</h2>
+    <input type="text" id="name" placeholder="菜名"><br>
+    <input type="number" id="price" placeholder="价格"><br>
+    <input type="text" id="imageUrl" placeholder="图片 URL"><br>
+    <button onclick="addItem()">添加菜品</button>
+  </div>
 
-<script>
-    const userId = 1; // 商家ID
+  <div class="menu-section">
+    <h2>当前菜单</h2>
+    <div id="menu">加载中...</div>
+  </div>
+
+  <script>
+    const userId = 1;
     const host = "http://47.88.23.191";
 
     async function addItem() {
-        const name = document.getElementById("name").value;
-        const price = document.getElementById("price").value;
-        const imageUrl = document.getElementById("imageUrl").value;
+      const name = document.getElementById("name").value.trim();
+      const price = document.getElementById("price").value.trim();
+      const imageUrl = document.getElementById("imageUrl").value.trim();
 
-        await fetch(`${host}:8089/api/menu/add?userId=${userId}&name=${encodeURIComponent(name)}&price=${price}&imageUrl=${encodeURIComponent(imageUrl)}`, {
-            method: "POST"
-        });
-        alert("菜品添加成功！");
-        loadMenu();
+      if (!name || !price || !imageUrl) {
+        alert("请填写完整的菜品信息！");
+        return;
+      }
+
+      await fetch(`${host}:8089/api/menu/add?userId=${userId}&name=${encodeURIComponent(name)}&price=${price}&imageUrl=${encodeURIComponent(imageUrl)}`, {
+        method: "POST"
+      });
+
+      alert("菜品添加成功！");
+      loadMenu();
     }
 
     async function removeItem(productId) {
-        await fetch(`${host}:8089/api/menu/remove?userId=${userId}&productId=${productId}`, {
-            method: "DELETE"
-        });
-        alert("菜品已删除！");
-        loadMenu();
+      if (!confirm("确定要删除该菜品吗？")) return;
+
+      await fetch(`${host}:8089/api/menu/remove?userId=${userId}&productId=${productId}`, {
+        method: "DELETE"
+      });
+
+      alert("菜品已删除！");
+      loadMenu();
     }
 
     async function loadMenu() {
-        const menuEl = document.getElementById("menu");
-        if (!menuEl) {
-            console.error("菜单容器未找到！");
-            return;
+      const menuEl = document.getElementById("menu");
+      if (!menuEl) return;
+
+      try {
+        const res = await fetch(`${host}:8089/api/menu/view?userId=${userId}`);
+        const data = await res.json();
+
+        if (!data.items || data.items.length === 0) {
+          menuEl.innerHTML = "<p>暂无菜品，请添加。</p>";
+          return;
         }
 
-        try {
-            const res = await fetch(`${host}:8089/api/menu/view?userId=${userId}`);
-            const data = await res.json();
-
-            if (!data || !data.items || data.items.length === 0) {
-                menuEl.innerHTML = "<p>暂无菜品，请添加。</p>";
-                return;
-            }
-
-            menuEl.innerHTML = data.items.map(item => `
-                <div style="margin-bottom:10px;">
-                  <img src="${item.imageUrl}" width="100"><br>
-                  <strong>${item.name}</strong><br>
-                  价格: ¥${item.price}<br>
-                  <button onclick="removeItem(${item.id})">删除</button>
-                </div>
-            `).join("");
-        } catch (err) {
-            menuEl.innerHTML = `<p style="color:red;">加载菜单失败，请稍后重试。</p>`;
-            console.error("菜单加载失败:", err);
-        }
+        menuEl.innerHTML = data.items.map(item => `
+          <div class="menu-item">
+            <img src="${item.imageUrl}" alt="${item.name}">
+            <div class="menu-info">
+              <strong>${item.name}</strong>
+              <span class="price">¥${item.price}</span>
+            </div>
+            <button class="delete-btn" onclick="removeItem(${item.id})">删除</button>
+          </div>
+        `).join("");
+      } catch (err) {
+        menuEl.innerHTML = `<p style="color:red;">加载菜单失败，请稍后重试。</p>`;
+        console.error("菜单加载失败:", err);
+      }
     }
 
-    // 页面加载完自动执行
     window.onload = () => {
-        loadMenu();
+      loadMenu();
     };
-</script>
+  </script>
 </body>
 </html>
