@@ -127,7 +127,7 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const userId = params.get("userId") || 1;
+    const vendorId = params.get("vendorId") || 1;
     const host = "http://127.0.0.1";
 
     async function addItem() {
@@ -140,7 +140,7 @@
         return;
       }
 
-      await fetch(`${host}:8089/api/menu/add?userId=${userId}&name=${encodeURIComponent(name)}&price=${price}&imageUrl=${encodeURIComponent(imageUrl)}`, {
+      await fetch(`${host}:8089/api/menu/add?userId=${vendorId}&name=${encodeURIComponent(name)}&price=${price}&imageUrl=${encodeURIComponent(imageUrl)}`, {
         method: "POST"
       });
 
@@ -151,7 +151,7 @@
     async function removeItem(productId) {
       if (!confirm("Are you sure you want to delete this item?")) return;
 
-      await fetch(`${host}:8089/api/menu/remove?userId=${userId}&productId=${productId}`, {
+      await fetch(`${host}:8089/api/menu/remove?userId=${vendorId}&productId=${productId}`, {
         method: "DELETE"
       });
 
@@ -164,7 +164,7 @@
       if (!menuEl) return;
 
       try {
-        const res = await fetch(`${host}:8089/api/menu/view?userId=${userId}`);
+        const res = await fetch(`${host}:8089/api/menu/view?userId=${vendorId}`);
         const data = await res.json();
 
         if (!data.items || data.items.length === 0) {
@@ -191,7 +191,7 @@
     async function loadOrders() {
       const container = document.getElementById("orderList");
       try {
-        const res = await fetch(`${host}:8082/api/order/vendor?vendorId=${userId}`);
+        const res = await fetch(`${host}:8082/api/order/vendor?vendorId=${vendorId}`);
         const orders = await res.json();
 
         if (!orders || orders.length === 0) {
