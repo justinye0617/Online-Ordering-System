@@ -1,0 +1,16 @@
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 6000
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+server:
+  port: 8081
+
+menu:
+  service:
+    url: http://localhost:8089
