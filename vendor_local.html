@@ -16,7 +16,7 @@
       color: #2c3e50;
     }
 
-    .form-section, .menu-section {
+    .form-section, .menu-section, .order-section {
       background-color: #fff;
       padding: 20px;
       border-radius: 12px;
@@ -89,6 +89,18 @@
     .delete-btn:hover {
       background-color: #c0392b;
     }
+
+    .order-block {
+      border: 1px solid #ccc;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
   </style>
 </head>
 <body>
@@ -108,8 +120,14 @@
     <div id="menu">加载中...</div>
   </div>
 
+  <div class="order-section">
+    <h2>订单管理</h2>
+    <div id="orderList"><p>加载中...</p></div>
+  </div>
+
   <script>
-    const userId = 1;
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get("userId") || 1;
     const host = "http://127.0.0.1";
 
     async function addItem() {
@@ -170,8 +188,38 @@
       }
     }
 
+    async function loadOrders() {
+      const container = document.getElementById("orderList");
+      try {
+        const res = await fetch(`${host}:8082/api/order/vendor?vendorId=${userId}`);
+        const orders = await res.json();
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = "<p>暂无订单记录</p>";
+          return;
+        }
+
+        container.innerHTML = orders.map(order => {
+          const time = new Date(order.checkoutTime).toLocaleString();
+          const total = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
+          const itemsHtml = order.items.map(i => `<li>${i.name} × ${i.quantity} (¥${i.price})</li>`).join("");
+
+          return `<div class="order-block">
+            <div><strong>订单编号:</strong> ${order.id}</div>
+            <div><strong>下单时间:</strong> ${time}</div>
+            <div><ul>${itemsHtml}</ul></div>
+            <div><strong>总计:</strong> ¥${total}</div>
+          </div>`;
+        }).join("");
+      } catch (err) {
+        container.innerHTML = "<p style='color:red;'>加载订单失败</p>";
+        console.error("订单加载失败:", err);
+      }
+    }
+
     window.onload = () => {
       loadMenu();
+      loadOrders();
     };
   </script>
 </body>

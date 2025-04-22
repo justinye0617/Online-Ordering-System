@@ -1,31 +1,21 @@
+<!-- customer_local.html -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
   <title>客户点餐系统</title>
   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    h2 {
-      color: #444;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 5px;
-    }
-    .container {
-      display: flex;
-      gap: 40px;
-    }
+    body { font-family: 'Arial', sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px; color: #333; }
+    h2 { color: #444; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+    .container { display: flex; gap: 40px; flex-wrap: wrap; }
     .section {
       flex: 1;
+      min-width: 300px;
       padding: 10px;
       background: #fff;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
     .item {
       border: 1px solid #eee;
@@ -36,47 +26,19 @@
       gap: 10px;
       align-items: center;
     }
-    .item img {
-      border-radius: 6px;
-    }
-    .item-details {
-      flex: 1;
-    }
-    .item-name {
-      font-weight: bold;
-      font-size: 16px;
-    }
-    .item-price {
-      color: #e91e63;
-    }
+    .item img { border-radius: 6px; }
+    .item-details { flex: 1; }
+    .item-name { font-weight: bold; font-size: 16px; }
+    .item-price { color: #e91e63; }
     button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
+      background-color: #4CAF50; color: white; border: none;
+      padding: 8px 12px; border-radius: 6px; cursor: pointer;
     }
-    button:hover {
-      background-color: #45a049;
-    }
-    .action-buttons {
-      margin-top: 20px;
-      display: flex;
-      gap: 10px;
-    }
-.item-details button {
-  margin-top: 5px;
-  background-color: #f44336;
-}
-.item-details button:hover {
-  background-color: #d32f2f;
-}
-
+    button:hover { background-color: #45a049; }
+    .action-buttons { margin-top: 20px; display: flex; gap: 10px; }
+    .order-block { border: 1px solid #ccc; margin: 10px 0; padding: 10px; border-radius: 8px; background: #fafafa; }
   </style>
 </head>
-<!-- 放在你的原有HTML基础上修改 -->
 <body>
   <h1>客户点餐系统</h1>
   <div class="container">
@@ -84,7 +46,6 @@
       <h2>菜单</h2>
       <div id="menu"></div>
     </div>
-
     <div class="section">
       <h2>购物车</h2>
       <div id="cart"></div>
@@ -92,7 +53,6 @@
         <button onclick="checkout()">结账</button>
       </div>
     </div>
-
     <div class="section">
       <h2>订单详情</h2>
       <div id="orderDetail"><p>暂无订单</p></div>
@@ -100,19 +60,24 @@
         <button onclick="pay()">支付订单</button>
       </div>
     </div>
+    <div class="section">
+      <h2>我的历史订单</h2>
+      <div id="orderHistory"><p>加载中...</p></div>
+    </div>
   </div>
 
 <script>
-  const userId = 1001;     // 客户ID
-  const vendorId = 1;      // 商家ID
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get("userId") || 1001;
+  const vendorId = params.get("vendorId") || 1;
   const host = "http://127.0.0.1";
-  let currentOrderId = null; // 保存当前订单编号
+  let currentOrderId = null;
 
   async function loadMenu() {
     const res = await fetch(`${host}:8089/api/menu/view?userId=${vendorId}`);
     const data = await res.json();
     const menuEl = document.getElementById("menu");
-    if (!data.items || data.items.length === 0) {
+    if (!data.items?.length) {
       menuEl.innerHTML = "<p>菜单为空</p>";
       return;
     }
@@ -131,12 +96,7 @@
   async function addToCart(productId, name, imageUrl, price) {
     const url = `${host}:8081/api/cart/add?userId=${userId}&vendorId=${vendorId}&productId=${productId}&name=${encodeURIComponent(name)}&imageUrl=${encodeURIComponent(imageUrl)}&quantity=1&price=${price}`;
     const res = await fetch(url, { method: "POST" });
-    if (res.ok) {
-      alert("已加入购物车");
-    } else {
-      const msg = await res.text();
-      alert("添加失败：" + msg);
-    }
+    res.ok ? alert("已加入购物车") : alert("添加失败：" + await res.text());
     viewCart();
   }
 
@@ -144,7 +104,7 @@
     const res = await fetch(`${host}:8081/api/cart/view?userId=${userId}&vendorId=${vendorId}`);
     const data = await res.json();
     const cartEl = document.getElementById("cart");
-    if (!data.items || data.items.length === 0) {
+    if (!data.items?.length) {
       cartEl.innerHTML = "<p>购物车为空</p>";
       return;
     }
@@ -162,33 +122,28 @@
 
   async function removeFromCart(productId) {
     if (!confirm("确定要删除该商品吗？")) return;
-
-    await fetch(`${host}:8081/api/cart/remove?userId=${userId}&vendorId=${vendorId}&productId=${productId}`, {
-      method: "DELETE"
-    });
-
+    await fetch(`${host}:8081/api/cart/remove?userId=${userId}&vendorId=${vendorId}&productId=${productId}`, { method: "DELETE" });
     alert("已从购物车移除该商品");
     viewCart();
   }
 
   async function checkout() {
-    const res = await fetch(`${host}:8082/api/order/checkout?userId=${userId}&vendorId=${vendorId}`, {
-      method: "POST"
-    });
+    const res = await fetch(`${host}:8082/api/order/checkout?userId=${userId}&vendorId=${vendorId}`, { method: "POST" });
     const order = await res.json();
     alert("订单创建成功！订单编号: " + order.id);
     currentOrderId = order.id;
     viewCart();
     showOrder(order);
+    loadOrderHistory(); // 更新历史订单
   }
 
   function showOrder(order) {
-    if (!order || !order.items) {
-      document.getElementById("orderDetail").innerHTML = "<p>暂无订单</p>";
+    const orderEl = document.getElementById("orderDetail");
+    if (!order?.items?.length) {
+      orderEl.innerHTML = "<p>暂无订单</p>";
       document.getElementById("payButtonContainer").style.display = "none";
       return;
     }
-
     let total = 0;
     const html = order.items.map(item => {
       total += item.quantity * item.price;
@@ -199,43 +154,46 @@
             <div class="item-name">${item.name}</div>
             <div>${item.quantity} × ¥${item.price}</div>
           </div>
-        </div>
-      `;
+        </div>`;
     }).join("");
-
-    document.getElementById("orderDetail").innerHTML = html + `
-      <hr>
-      <div style="font-weight: bold; font-size: 18px;">总计: ¥${total.toFixed(2)}</div>
-    `;
-
+    orderEl.innerHTML = html + `<hr><div style="font-weight: bold; font-size: 18px;">总计: ¥${total.toFixed(2)}</div>`;
     document.getElementById("payButtonContainer").style.display = "block";
   }
 
   async function pay() {
-    if (!currentOrderId) {
-      alert("没有待支付的订单");
+    if (!currentOrderId) return alert("没有待支付的订单");
+    const res = await fetch(`${host}:8082/api/order/pay/${currentOrderId}`, { method: "POST" });
+    res.ok ? alert("支付成功！订单编号：" + (await res.json()).id) : alert("支付失败：" + await res.text());
+    document.getElementById("payButtonContainer").style.display = "none";
+    loadOrderHistory();
+  }
+
+  async function loadOrderHistory() {
+    const container = document.getElementById("orderHistory");
+    const res = await fetch(`${host}:8082/api/order/user?userId=${userId}`);
+    const orders = await res.json();
+    if (!orders?.length) {
+      container.innerHTML = "<p>暂无订单记录</p>";
       return;
     }
-
-    const res = await fetch(`${host}:8082/api/order/pay/${currentOrderId}`, {
-      method: "POST"
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      alert("支付成功！订单编号：" + data.id);
-      document.getElementById("payButtonContainer").style.display = "none";
-    } else {
-      const msg = await res.text();
-      alert("支付失败：" + msg);
-    }
+    container.innerHTML = orders.map(order => {
+      const time = new Date(order.checkoutTime).toLocaleString();
+      const total = order.items.reduce((acc, i) => acc + i.price * i.quantity, 0).toFixed(2);
+      const itemsHtml = order.items.map(i => `<li>${i.name} × ${i.quantity} (¥${i.price})</li>`).join("");
+      return `<div class="order-block">
+        <div><strong>订单编号:</strong> ${order.id}</div>
+        <div><strong>下单时间:</strong> ${time}</div>
+        <div><ul>${itemsHtml}</ul></div>
+        <div><strong>总计:</strong> ¥${total}</div>
+      </div>`;
+    }).join("");
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     loadMenu();
     viewCart();
+    loadOrderHistory();
   });
 </script>
 </body>
-
 </html>
