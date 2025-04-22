@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>商家后台</title>
+  <title>Vendor Backend</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -105,24 +105,24 @@
 </head>
 <body>
 
-  <h1>商家后台管理</h1>
+  <h1>Vendor Backend Management</h1>
 
   <div class="form-section">
-    <h2>添加菜品</h2>
-    <input type="text" id="name" placeholder="菜名"><br>
-    <input type="number" id="price" placeholder="价格"><br>
-    <input type="text" id="imageUrl" placeholder="图片 URL"><br>
-    <button onclick="addItem()">添加菜品</button>
+    <h2>Add Menu Item</h2>
+    <input type="text" id="name" placeholder="Dish Name"><br>
+    <input type="number" id="price" placeholder="Price"><br>
+    <input type="text" id="imageUrl" placeholder="Image URL"><br>
+    <button onclick="addItem()">Add Item</button>
   </div>
 
   <div class="menu-section">
-    <h2>当前菜单</h2>
-    <div id="menu">加载中...</div>
+    <h2>Current Menu</h2>
+    <div id="menu">Loading...</div>
   </div>
 
   <div class="order-section">
-    <h2>订单管理</h2>
-    <div id="orderList"><p>加载中...</p></div>
+    <h2>Order Management</h2>
+    <div id="orderList"><p>Loading...</p></div>
   </div>
 
   <script>
@@ -136,7 +136,7 @@
       const imageUrl = document.getElementById("imageUrl").value.trim();
 
       if (!name || !price || !imageUrl) {
-        alert("请填写完整的菜品信息！");
+        alert("Please fill out all dish information!");
         return;
       }
 
@@ -144,18 +144,18 @@
         method: "POST"
       });
 
-      alert("菜品添加成功！");
+      alert("Item added successfully!");
       loadMenu();
     }
 
     async function removeItem(productId) {
-      if (!confirm("确定要删除该菜品吗？")) return;
+      if (!confirm("Are you sure you want to delete this item?")) return;
 
       await fetch(`${host}:8089/api/menu/remove?userId=${userId}&productId=${productId}`, {
         method: "DELETE"
       });
 
-      alert("菜品已删除！");
+      alert("Item deleted!");
       loadMenu();
     }
 
@@ -168,7 +168,7 @@
         const data = await res.json();
 
         if (!data.items || data.items.length === 0) {
-          menuEl.innerHTML = "<p>暂无菜品，请添加。</p>";
+          menuEl.innerHTML = "<p>No items available. Please add.</p>";
           return;
         }
 
@@ -179,12 +179,12 @@
               <strong>${item.name}</strong>
               <span class="price">¥${item.price}</span>
             </div>
-            <button class="delete-btn" onclick="removeItem(${item.id})">删除</button>
+            <button class="delete-btn" onclick="removeItem(${item.id})">Delete</button>
           </div>
         `).join("");
       } catch (err) {
-        menuEl.innerHTML = `<p style="color:red;">加载菜单失败，请稍后重试。</p>`;
-        console.error("菜单加载失败:", err);
+        menuEl.innerHTML = `<p style="color:red;">Failed to load menu. Please try again later.</p>`;
+        console.error("Menu loading failed:", err);
       }
     }
 
@@ -195,7 +195,7 @@
         const orders = await res.json();
 
         if (!orders || orders.length === 0) {
-          container.innerHTML = "<p>暂无订单记录</p>";
+          container.innerHTML = "<p>No order records</p>";
           return;
         }
 
@@ -205,15 +205,15 @@
           const itemsHtml = order.items.map(i => `<li>${i.name} × ${i.quantity} (¥${i.price})</li>`).join("");
 
           return `<div class="order-block">
-            <div><strong>订单编号:</strong> ${order.id}</div>
-            <div><strong>下单时间:</strong> ${time}</div>
+            <div><strong>Order ID:</strong> ${order.id}</div>
+            <div><strong>Checkout Time:</strong> ${time}</div>
             <div><ul>${itemsHtml}</ul></div>
-            <div><strong>总计:</strong> ¥${total}</div>
+            <div><strong>Total:</strong> ¥${total}</div>
           </div>`;
         }).join("");
       } catch (err) {
-        container.innerHTML = "<p style='color:red;'>加载订单失败</p>";
-        console.error("订单加载失败:", err);
+        container.innerHTML = "<p style='color:red;'>Failed to load orders</p>";
+        console.error("Order loading failed:", err);
       }
     }
 
