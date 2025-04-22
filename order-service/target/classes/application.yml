@@ -17,3 +17,7 @@ server:
 cart:
   service:
     url: http://localhost:8081
+menu:
+  service:
+    url: http://localhost:8089
+

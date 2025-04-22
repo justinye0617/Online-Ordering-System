@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 public interface CartClient {
 
     @GetMapping("/api/cart/view")
-    CartDTO getCart(@RequestParam("userId") Long userId);
+    CartDTO getCart(@RequestParam("userId") Long userId, @RequestParam("vendorId") Long vendorId);
 
     @DeleteMapping("/api/cart/clear")
-    void clearCart(@RequestParam("userId") Long userId);
+    void clearCart(@RequestParam("userId") Long userId, @RequestParam("vendorId") Long vendorId);
 }

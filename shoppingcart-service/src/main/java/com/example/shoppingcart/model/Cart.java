@@ -17,6 +17,8 @@ public class Cart {
 
     @Indexed
     private Long userId;
+    @Indexed
+    private Long vendorId;
     private List<CartItem> items = new ArrayList<>();
 
     @TimeToLive

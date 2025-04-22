@@ -16,20 +16,22 @@ public class CartController {
 
     @PostMapping("/add")
     public ResponseEntity<Cart> addItem(@RequestParam Long userId,
+                                        @RequestParam Long vendorId,
                                         @RequestParam Long productId,
                                         @RequestParam String name,
                                         @RequestParam String imageUrl,
                                         @RequestParam Integer quantity,
                                         @RequestParam Double price) {
-        Cart cart = cartService.addItemToCart(userId, productId, name, imageUrl, quantity, price);
+        Cart cart = cartService.addItemToCart(userId, vendorId, productId, name, imageUrl, quantity, price);
         return ResponseEntity.ok(cart);
     }
 
 
     @DeleteMapping("/remove")
     public ResponseEntity<Cart> removeItem(@RequestParam Long userId,
+                                           @RequestParam Long vendorId,
                                            @RequestParam Long productId) {
-        Cart cart = cartService.removeItemFromCart(userId, productId);
+        Cart cart = cartService.removeItemFromCart(userId, vendorId, productId);
         if (cart == null) {
             return ResponseEntity.notFound().build();
         }
@@ -37,8 +39,8 @@ public class CartController {
     }
 
     @GetMapping("/view")
-    public ResponseEntity<Cart> viewCart(@RequestParam Long userId) {
-        Cart cart = cartService.getCart(userId);
+    public ResponseEntity<Cart> viewCart(@RequestParam Long userId, @RequestParam Long vendorId) {
+        Cart cart = cartService.getCart(userId, vendorId);
         if (cart == null) {
             return ResponseEntity.notFound().build();
         }
@@ -46,8 +48,8 @@ public class CartController {
     }
 
     @DeleteMapping("/clear")
-    public ResponseEntity<Void> clear(@RequestParam Long userId) {
-        cartService.clearCart(userId);
+    public ResponseEntity<Void> clear(@RequestParam Long userId, @RequestParam Long vendorId) {
+        cartService.clearCart(userId, vendorId);
         return ResponseEntity.ok().build();
     }
 }

@@ -41,4 +41,11 @@ public class MenuController {
         }
         return ResponseEntity.ok(menu);
     }
+
+    @GetMapping("/has")
+    public ResponseEntity<Boolean> exists(@RequestParam Long userId, @RequestParam Long productId) {
+        Menu menu = menuService.getMenu(userId);
+        boolean exists = menu.getItems().stream().anyMatch(item -> item.getId().equals(productId));
+        return ResponseEntity.ok(exists);
+    }
 }

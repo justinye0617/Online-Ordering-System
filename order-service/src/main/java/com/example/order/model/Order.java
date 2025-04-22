@@ -14,8 +14,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
+    private Long vendorId;
     private String status;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime checkoutTime;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference

@@ -21,20 +21,6 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Order> createOrder(@RequestBody OrderRequest orderRequest) {
-        List<OrderItem> items = orderRequest.getItems().stream().map(req -> {
-            OrderItem item = new OrderItem();
-            item.setProductId(req.getProductId());
-            item.setQuantity(req.getQuantity());
-            item.setPrice(req.getPrice());
-            return item;
-        }).collect(Collectors.toList());
-
-        Order order = orderService.createOrder(orderRequest.getUserId(), items);
-        return ResponseEntity.ok(order);
-    }
-
     @PostMapping("/pay/{orderId}")
     public ResponseEntity<Order> payOrder(@PathVariable Long orderId) {
         Order order = orderService.payOrder(orderId);
@@ -48,8 +34,19 @@ public class OrderController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<Order> checkout(@RequestParam Long userId) {
-        Order order = orderService.checkout(userId);
+    public ResponseEntity<Order> checkout(@RequestParam Long userId, @RequestParam Long vendorId) {
+        Order order = orderService.checkout(userId, vendorId);
         return ResponseEntity.ok(order);
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<Order>> getOrdersByUser(@RequestParam Long userId) {
+        return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
+    }
+
+    @GetMapping("/vendor")
+    public ResponseEntity<List<Order>> getOrdersByVendor(@RequestParam Long vendorId) {
+        return ResponseEntity.ok(orderService.getOrdersByVendorId(vendorId));
+    }
+
 }

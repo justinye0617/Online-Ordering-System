@@ -116,6 +116,7 @@
         method: "POST"
       });
       alert("已加入购物车");
+      viewCart(); // ✅ 添加商品后自动刷新购物车
     }
 
     async function viewCart() {
@@ -143,10 +144,13 @@
       });
       const order = await res.json();
       alert("订单创建成功！订单编号: " + order.id);
-      viewCart();
+      viewCart(); // ✅ 结账后自动刷新购物车
     }
 
-    document.addEventListener("DOMContentLoaded", loadMenu);
+    document.addEventListener("DOMContentLoaded", () => {
+      loadMenu();
+      viewCart(); // ✅ 页面加载完成后自动显示购物车内容
+    });
   </script>
 </body>
 </html>

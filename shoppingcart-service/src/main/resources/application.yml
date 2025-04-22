@@ -10,3 +10,7 @@ spring:
         min-idle: 0
 server:
   port: 8081
+
+menu:
+  service:
+    url: http://localhost:8089
